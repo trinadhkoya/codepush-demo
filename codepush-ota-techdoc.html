@@ -29,6 +29,7 @@
 
     /* ── LAYOUT ── */
     .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+    .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
 
     /* ── HEADER ── */
     header {
@@ -53,8 +54,8 @@
 
     /* ── HERO ── */
     .hero {
-      padding: 5rem 0 4rem;
-      border-bottom: 1px solid var(--border);
+      padding: 5rem 0 2rem;
+      border-bottom: none;
       background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,77,255,.12) 0%, transparent 70%);
     }
     .hero-eyebrow {
@@ -72,6 +73,604 @@
       font-size: 1.1rem; color: var(--muted);
       max-width: 580px; line-height: 1.6;
     }
+
+    /* ════════════════════════════════════════════
+       ANIMATED PHONE VIDEO
+       ════════════════════════════════════════════ */
+    .video-section {
+      padding: 4rem 0 5rem;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(124,77,255,.05) 0%, transparent 70%);
+    }
+    .video-wrap {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .video-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(2.5rem, 5vw, 5rem);
+      width: 100%;
+      min-height: 620px;
+    }
+
+    /* ── iPhone 15 Pro Device Frame ── */
+    .vid-phone {
+      position: relative;
+      width: 300px;
+      height: 620px;
+      flex-shrink: 0;
+      background: #1c1c1e;
+      border-radius: 54px;
+      border: 5px solid #2c2c2e;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.08),
+        0 2px 4px rgba(0,0,0,.3),
+        0 12px 40px rgba(0,0,0,.5),
+        0 50px 100px rgba(0,0,0,.6),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      overflow: hidden;
+      transition: transform 0.5s cubic-bezier(.4,0,.2,1), opacity 0.3s;
+    }
+    .vid-phone.shake { animation: vid-shake 0.6s cubic-bezier(.36,.07,.19,.97); }
+    .vid-phone.shrink { transform: scale(0.82) translateY(-20px); border-radius: 30px; }
+    .vid-phone.off { opacity: 0.3; transform: scale(0.95); }
+
+    /* Dynamic Island */
+    .vid-island {
+      position: absolute;
+      top: 12px; left: 50%; transform: translateX(-50%);
+      width: 90px; height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 20;
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .vid-screen {
+      position: absolute;
+      inset: 0;
+      border-radius: 49px;
+      overflow: hidden;
+      background: #000;
+    }
+    .vid-home-bar {
+      position: absolute;
+      bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 5px;
+      background: rgba(255,255,255,.25);
+      border-radius: 4px;
+      z-index: 60;
+    }
+
+    /* ── Screen Frames ── */
+    .vid-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .vid-frame.active { opacity: 1; pointer-events: auto; }
+
+    /* ── iOS Status Bar ── */
+    .ios-status {
+      height: 54px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 28px 8px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .ios-status-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+    }
+    .ios-status-right svg { width: 16px; height: 16px; fill: #fff; }
+
+    /* ── App Header / Nav Bar ── */
+    .app-header {
+      padding: 8px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .app-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-header-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .app-header-subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,.5);
+      font-weight: 500;
+    }
+    .app-header-icons {
+      display: flex;
+      gap: 12px;
+    }
+    .app-header-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    /* Search bar */
+    .app-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .app-search-icon { font-size: 13px; opacity: 0.4; }
+    .app-search-text { font-size: 13px; color: rgba(255,255,255,.35); }
+
+    /* ── Category Pills ── */
+    .app-cats {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .app-cat {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.6);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .app-cat.active {
+      background: #f5a623;
+      color: #000;
+      border-color: #f5a623;
+    }
+
+    /* ── Menu Item Cards ── */
+    .app-items {
+      flex: 1;
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      position: relative;
+    }
+    .menu-item.highlight {
+      background: rgba(245,166,35,.08);
+      border-color: rgba(245,166,35,.3);
+      transform: scale(1.015);
+    }
+    .menu-item.tapped {
+      transform: scale(0.96);
+      background: rgba(245,166,35,.15);
+    }
+    .menu-item-img {
+      width: 56px; height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2a1f0a, #3d2b10);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .menu-item-body { flex: 1; min-width: 0; }
+    .menu-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .menu-item-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 4px;
+    }
+    .menu-item-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f5a623;
+    }
+    .menu-item-add {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: #f5a623;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: #000;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+    .menu-item.tapped .menu-item-add { transform: scale(0.85); }
+
+    /* ── Bottom Tab Bar ── */
+    .app-tabbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 10px 0 28px;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,.06);
+      flex-shrink: 0;
+    }
+    .app-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 18px;
+      opacity: 0.4;
+    }
+    .app-tab.active { opacity: 1; }
+    .app-tab-label { font-size: 9px; color: rgba(255,255,255,.7); font-weight: 600; }
+    .app-tab.active .app-tab-label { color: #f5a623; }
+    .app-tab-badge {
+      position: absolute;
+      top: -4px; right: -6px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #ff3b30;
+      font-size: 9px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Crash Dialog (iOS Alert Style) ── */
+    .crash-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .crash-overlay.active { opacity: 1; }
+    .crash-dialog {
+      width: 240px;
+      background: #1c1c1e;
+      border-radius: 14px;
+      overflow: hidden;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.1);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    .crash-overlay.active .crash-dialog { transform: scale(1); }
+    .crash-dialog-body { padding: 20px 16px 14px; }
+    .crash-dialog-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .crash-dialog-msg { font-size: 12px; color: rgba(255,255,255,.6); line-height: 1.5; }
+    .crash-dialog-btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      font-size: 15px;
+      font-weight: 600;
+      color: #007aff;
+      text-align: center;
+    }
+
+    /* ── App Switcher View ── */
+    .app-switcher {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 35;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .app-switcher.active { opacity: 1; }
+    .app-switcher-card {
+      width: 200px; height: 360px;
+      border-radius: 20px;
+      background: linear-gradient(175deg, #1a1a2e, #16213e);
+      border: 1px solid rgba(255,255,255,.1);
+      overflow: hidden;
+      transform: scale(1) translateY(0);
+      transition: transform 0.5s cubic-bezier(.4,0,.2,1), opacity 0.4s;
+      opacity: 1;
+    }
+    .app-switcher-card.killing {
+      transform: translateY(-400px) scale(0.7);
+      opacity: 0;
+    }
+    .app-switcher-card-header {
+      padding: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,.8);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .app-switcher-card-preview {
+      width: 100%; height: calc(100% - 36px);
+      background: linear-gradient(175deg, #1a1a2e 0%, #0d1117 100%);
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: rgba(255,255,255,.3);
+    }
+
+    /* ── Black Screen (killed) ── */
+    .black-screen {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 36;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .black-screen.active { opacity: 1; }
+
+    /* ── Splash Screen ── */
+    .splash-screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #f5a623 0%, #e6930c 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 34;
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+    .splash-screen.active { opacity: 1; }
+    .splash-logo {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.2);
+    }
+    .splash-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(0,0,0,.5);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .splash-loader {
+      width: 28px; height: 28px;
+      border: 3px solid rgba(0,0,0,.15);
+      border-top-color: rgba(0,0,0,.6);
+      border-radius: 50%;
+      animation: vid-spin 0.7s linear infinite;
+    }
+    /* OTA update indicator on splash */
+    .splash-ota {
+      position: absolute;
+      bottom: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .splash-ota.active { opacity: 1; }
+    .splash-ota-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(0,0,0,.5);
+    }
+    .splash-ota-bar {
+      width: 100px; height: 3px;
+      border-radius: 3px;
+      background: rgba(0,0,0,.15);
+      overflow: hidden;
+    }
+    .splash-ota-fill {
+      width: 0%;
+      height: 100%;
+      background: rgba(0,0,0,.5);
+      border-radius: 3px;
+      transition: width 1.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Success Toast (native-style) ── */
+    .success-toast {
+      position: absolute;
+      bottom: 80px; left: 14px; right: 14px;
+      background: #1c7a4e;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 10px;
+      z-index: 40;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.35s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+    .success-toast.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .success-toast-icon { font-size: 20px; }
+    .success-toast-body { flex: 1; }
+    .success-toast-title { font-size: 13px; font-weight: 700; color: #fff; }
+    .success-toast-sub { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; }
+
+    /* ── Finger Cursor ── */
+    .vid-cursor {
+      position: absolute;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,166,35,.5) 0%, rgba(245,166,35,.15) 70%);
+      border: 2px solid rgba(245,166,35,.6);
+      z-index: 50;
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity 0.25s, transform 0.25s, left 0.4s cubic-bezier(.4,0,.2,1), top 0.4s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+    }
+    .vid-cursor.visible { opacity: 1; transform: scale(1); }
+    .vid-cursor.tap { animation: vid-tap-ring 0.4s ease-out; }
+
+    /* ── Narration Panel ── */
+    .vid-narration {
+      flex: 1;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .vid-narrator-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f5a623;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .vid-narrator-label.active { opacity: 1; transform: translateY(0); }
+    .vid-narrator-title {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s 0.08s, transform 0.4s 0.08s;
+    }
+    .vid-narrator-title.active { opacity: 1; transform: translateY(0); }
+    .vid-narrator-desc {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s 0.16s, transform 0.4s 0.16s;
+    }
+    .vid-narrator-desc.active { opacity: 1; transform: translateY(0); }
+
+    /* ── Playback Controls ── */
+    .vid-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 720px;
+      margin-top: 2.5rem;
+      padding: 12px 18px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .vid-ctrl-play {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.15);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: border-color .2s, background .2s;
+      flex-shrink: 0;
+    }
+    .vid-ctrl-play:hover { border-color: #f5a623; background: rgba(245,166,35,.08); }
+    .vid-ctrl-progress {
+      flex: 1; height: 5px;
+      background: rgba(255,255,255,.06);
+      border-radius: 5px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .vid-ctrl-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f5a623, #00e5a0);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    .vid-ctrl-time {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 42px;
+      text-align: right;
+    }
+    .vid-ctrl-label {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 700;
+      min-width: 130px;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .video-stage { flex-direction: column; min-height: auto; gap: 2rem; }
+      .vid-phone { width: 260px; height: 540px; }
+      .vid-narration { max-width: 100%; text-align: center; align-items: center; }
+      .vid-ctrl-label { display: none; }
+    }
+
+    /* ── Keyframe Animations ── */
+    @keyframes vid-shake { 0%,100%{transform:translateX(0)} 10%{transform:translateX(-6px) rotate(-1deg)} 20%{transform:translateX(6px) rotate(1deg)} 30%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 50%{transform:translateX(-3px)} 60%{transform:translateX(3px)} 70%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
+    @keyframes vid-spin { to { transform: rotate(360deg); } }
+    @keyframes vid-tap-ring { 0%{box-shadow:0 0 0 0 rgba(245,166,35,.5)} 100%{box-shadow:0 0 0 20px rgba(245,166,35,0)} }
+    @keyframes vid-slide-up { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes vid-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
     /* ── SECTION WRAPPER ── */
     .section {
@@ -99,105 +698,6 @@
       font-size: 1.05rem; color: var(--muted);
       max-width: 620px; margin-bottom: 2.5rem; line-height: 1.6;
     }
-
-    /* ── PHONE DEMO ── */
-    .demo-wrap {
-      display: flex; flex-direction: column; align-items: center; gap: 2rem;
-      margin: 2rem 0;
-    }
-    .demo-inner {
-      display: flex; align-items: flex-start; gap: 3rem; flex-wrap: wrap; justify-content: center;
-    }
-    .vid-wrap {
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
-    }
-    .phone-scene {
-      position: relative; width: 240px; height: 480px; flex-shrink: 0;
-    }
-    .phone-frame {
-      position: absolute; inset: 0;
-      background: #1c1c1e;
-      border-radius: 40px;
-      border: 6px solid #3a3a3c;
-      box-shadow:
-        0 0 0 1px #555,
-        0 30px 80px rgba(0,0,0,.7),
-        inset 0 1px 0 rgba(255,255,255,.08);
-      overflow: hidden;
-    }
-    .phone-notch {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 90px; height: 26px;
-      background: #1c1c1e; border-radius: 0 0 16px 16px;
-      z-index: 10; box-shadow: 0 1px 0 #3a3a3c;
-    }
-    .phone-screen {
-      position: absolute; inset: 0;
-      border-radius: 34px; overflow: hidden; background: #000;
-    }
-    .phone-home {
-      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-      width: 100px; height: 4px; background: rgba(255,255,255,.3); border-radius: 3px;
-    }
-    .screen-state {
-      position: absolute; inset: 0;
-      opacity: 0; transition: opacity .45s cubic-bezier(.4,0,.2,1);
-      display: flex; flex-direction: column;
-    }
-    .screen-state.active { opacity: 1; }
-    .vid-scrub {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 3px; z-index: 30; overflow: hidden;
-    }
-    .vid-scrub-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      width: 0%;
-    }
-    .vid-caption {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 4px; min-height: 48px; max-width: 260px; text-align: center;
-    }
-    .vid-caption-title {
-      font-size: 13px; font-weight: 700; color: var(--text);
-      transition: opacity .35s ease;
-    }
-    .vid-caption-sub {
-      font-size: 11px; color: var(--muted);
-      transition: opacity .35s ease;
-    }
-
-    /* Phone screen states */
-    .ss-bar {
-      height: 36px; display: flex; align-items: center;
-      padding: 0 14px; justify-content: space-between;
-      font-size: 10px; font-weight: 700;
-      border-radius: 34px 34px 0 0;
-      flex-shrink: 0; z-index: 5;
-    }
-    .ss-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    @keyframes spin   { to { transform: rotate(360deg); } }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes popIn  { 0% { transform: scale(.7); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes shake  { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
-
-    /* Demo annotations */
-    .demo-annotations {
-      flex: 1; min-width: 220px; max-width: 300px;
-      display: flex; flex-direction: column; gap: .85rem;
-      padding-top: .5rem;
-    }
-    .ann-item {
-      display: flex; gap: .75rem; align-items: flex-start;
-      padding: .75rem 1rem;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; opacity: .45;
-      transition: opacity .4s, border-color .4s;
-    }
-    .ann-item.active { opacity: 1; border-color: var(--primary); }
-    .ann-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
-    .ann-title { font-size: 13px; font-weight: 700; color: var(--text); }
-    .ann-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
 
     /* ── PAIN POINTS (Section 1) ── */
     .pain-grid {
@@ -401,6 +901,255 @@
   </div>
 </section>
 
+<!-- ════ ANIMATED PHONE VIDEO ════ -->
+<section class="video-section">
+  <div class="video-wrap">
+    <div class="video-stage">
+
+      <!-- THE PHONE (iPhone 15 Pro style) -->
+      <div class="vid-phone" id="vidPhone">
+        <div class="vid-island"></div>
+        <div class="vid-screen" id="vidScreen">
+
+          <!-- FRAME: Menu browsing (normal app state) -->
+          <div class="vid-frame active" id="vf-menu">
+            <!-- iOS Status Bar -->
+            <div class="ios-status">
+              <span>9:41</span>
+              <div class="ios-status-right">
+                <svg viewBox="0 0 18 12"><path d="M1 4.5C3.3 1.8 6.5 0 10 0s6.7 1.8 9 4.5M4 7.5C5.5 5.8 7.6 5 10 5s4.5.8 6 2.5M7 10.5c.8-.9 2-1.5 3-1.5s2.2.6 3 1.5" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" fill="none" stroke="white" stroke-width="1.2"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- App Header -->
+            <div class="app-header">
+              <div class="app-header-row">
+                <div>
+                  <div class="app-header-title">Menu</div>
+                  <div class="app-header-subtitle">Pickup · Downtown BWW</div>
+                </div>
+                <div class="app-header-icons">
+                  <div class="app-header-icon">🔔</div>
+                  <div class="app-header-icon">⭐</div>
+                </div>
+              </div>
+              <div class="app-search">
+                <span class="app-search-icon">🔍</span>
+                <span class="app-search-text">Search wings, burgers, drinks...</span>
+              </div>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="app-cats">
+              <span class="app-cat active">Wings</span>
+              <span class="app-cat">Burgers</span>
+              <span class="app-cat">Tenders</span>
+              <span class="app-cat">Sides</span>
+              <span class="app-cat">Drinks</span>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="app-items">
+              <div class="menu-item" id="mi-0">
+                <div class="menu-item-img">🍗</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Traditional Wings</div>
+                  <div class="menu-item-desc">Bone-in · Choose your sauce</div>
+                  <div class="menu-item-price">$14.99</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-1">
+                <div class="menu-item-img">🍔</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Smash Burger</div>
+                  <div class="menu-item-desc">Double patty · American cheese</div>
+                  <div class="menu-item-price">$12.49</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-2">
+                <div class="menu-item-img">🌯</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Chicken Wrap</div>
+                  <div class="menu-item-desc">Crispy or grilled · Ranch</div>
+                  <div class="menu-item-price">$10.99</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-3">
+                <div class="menu-item-img">🍟</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Seasoned Fries</div>
+                  <div class="menu-item-desc">Large · Add cheese $1.50</div>
+                  <div class="menu-item-price">$5.49</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="app-tabbar">
+              <div class="app-tab"><span>🏠</span><span class="app-tab-label">Home</span></div>
+              <div class="app-tab active"><span>🍔</span><span class="app-tab-label">Menu</span></div>
+              <div class="app-tab"><span>📍</span><span class="app-tab-label">Stores</span></div>
+              <div class="app-tab"><span>👤</span><span class="app-tab-label">Account</span></div>
+              <div class="app-tab" style="position:relative"><span>🛒</span><span class="app-tab-label">Bag</span></div>
+            </div>
+          </div>
+
+          <!-- CRASH: iOS Alert Dialog -->
+          <div class="crash-overlay" id="vf-crash">
+            <div class="crash-dialog">
+              <div class="crash-dialog-body">
+                <div class="crash-dialog-title">App Stopped</div>
+                <div class="crash-dialog-msg">An unexpected error occurred while adding item to your bag.</div>
+              </div>
+              <div class="crash-dialog-btn">Close</div>
+            </div>
+          </div>
+
+          <!-- APP SWITCHER VIEW -->
+          <div class="app-switcher" id="vf-switcher">
+            <div class="app-switcher-card" id="switcherCard">
+              <div class="app-switcher-card-header">
+                <span>🍗</span> BWW App
+              </div>
+              <div class="app-switcher-card-preview">
+                Crashed screen
+              </div>
+            </div>
+          </div>
+
+          <!-- BLACK SCREEN (killed) -->
+          <div class="black-screen" id="vf-black"></div>
+
+          <!-- SPLASH SCREEN (reopening) -->
+          <div class="splash-screen" id="vf-splash">
+            <div class="splash-logo">🍗</div>
+            <div class="splash-text">Buffalo Wild Wings</div>
+            <div class="splash-loader"></div>
+            <div class="splash-ota" id="splashOta">
+              <div class="splash-ota-text">Applying update...</div>
+              <div class="splash-ota-bar"><div class="splash-ota-fill" id="otaFill"></div></div>
+            </div>
+          </div>
+
+          <!-- FRAME: Success state (same menu, works now) -->
+          <div class="vid-frame" id="vf-success">
+            <div class="ios-status">
+              <span>9:42</span>
+              <div class="ios-status-right">
+                <svg viewBox="0 0 18 12"><path d="M1 4.5C3.3 1.8 6.5 0 10 0s6.7 1.8 9 4.5M4 7.5C5.5 5.8 7.6 5 10 5s4.5.8 6 2.5M7 10.5c.8-.9 2-1.5 3-1.5s2.2.6 3 1.5" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" fill="none" stroke="white" stroke-width="1.2"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/></svg>
+              </div>
+            </div>
+            <div class="app-header">
+              <div class="app-header-row">
+                <div>
+                  <div class="app-header-title">Menu</div>
+                  <div class="app-header-subtitle">Pickup · Downtown BWW</div>
+                </div>
+                <div class="app-header-icons">
+                  <div class="app-header-icon">🔔</div>
+                  <div class="app-header-icon">⭐</div>
+                </div>
+              </div>
+              <div class="app-search">
+                <span class="app-search-icon">🔍</span>
+                <span class="app-search-text">Search wings, burgers, drinks...</span>
+              </div>
+            </div>
+            <div class="app-cats">
+              <span class="app-cat active">Wings</span>
+              <span class="app-cat">Burgers</span>
+              <span class="app-cat">Tenders</span>
+              <span class="app-cat">Sides</span>
+            </div>
+            <div class="app-items">
+              <div class="menu-item" id="mi-s0">
+                <div class="menu-item-img">🍗</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Traditional Wings</div>
+                  <div class="menu-item-desc">Bone-in · Choose your sauce</div>
+                  <div class="menu-item-price">$14.99</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-s1">
+                <div class="menu-item-img">🍔</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Smash Burger</div>
+                  <div class="menu-item-desc">Double patty · American cheese</div>
+                  <div class="menu-item-price">$12.49</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-s2">
+                <div class="menu-item-img">🌯</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Chicken Wrap</div>
+                  <div class="menu-item-desc">Crispy or grilled · Ranch</div>
+                  <div class="menu-item-price">$10.99</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+              <div class="menu-item" id="mi-s3">
+                <div class="menu-item-img">🍟</div>
+                <div class="menu-item-body">
+                  <div class="menu-item-name">Seasoned Fries</div>
+                  <div class="menu-item-desc">Large · Add cheese $1.50</div>
+                  <div class="menu-item-price">$5.49</div>
+                </div>
+                <div class="menu-item-add">+</div>
+              </div>
+            </div>
+            <!-- Success Toast -->
+            <div class="success-toast" id="vf-toast">
+              <span class="success-toast-icon">✅</span>
+              <div class="success-toast-body">
+                <div class="success-toast-title">Added to Bag</div>
+                <div class="success-toast-sub">Traditional Wings · $14.99</div>
+              </div>
+            </div>
+            <div class="app-tabbar">
+              <div class="app-tab"><span>🏠</span><span class="app-tab-label">Home</span></div>
+              <div class="app-tab active"><span>🍔</span><span class="app-tab-label">Menu</span></div>
+              <div class="app-tab"><span>📍</span><span class="app-tab-label">Stores</span></div>
+              <div class="app-tab"><span>👤</span><span class="app-tab-label">Account</span></div>
+              <div class="app-tab" style="position:relative"><span>🛒</span><span class="app-tab-label">Bag</span><span class="app-tab-badge">1</span></div>
+            </div>
+          </div>
+
+        </div><!-- /vid-screen -->
+        <div class="vid-home-bar"></div>
+        <!-- Tap cursor indicator -->
+        <div class="vid-cursor" id="vidCursor"></div>
+      </div><!-- /vid-phone -->
+
+      <!-- NARRATION PANEL -->
+      <div class="vid-narration">
+        <div class="vid-narrator-label active" id="narLabel">Scene 1</div>
+        <div class="vid-narrator-title active" id="narTitle">Browsing the menu</div>
+        <div class="vid-narrator-desc active" id="narDesc">A customer opens BWW on their lunch break. They scroll through wings, checking out what sounds good today.</div>
+      </div>
+
+    </div><!-- /video-stage -->
+
+    <!-- PLAYBACK CONTROLS -->
+    <div class="vid-controls">
+      <button class="vid-ctrl-play" id="vidPlay" aria-label="Play/Pause">⏸</button>
+      <div class="vid-ctrl-progress" id="vidProgress">
+        <div class="vid-ctrl-progress-fill" id="vidProgressFill"></div>
+      </div>
+      <span class="vid-ctrl-label" id="vidLabel">Browsing menu</span>
+      <span class="vid-ctrl-time" id="vidTime">0:00</span>
+    </div>
+
+  </div><!-- /video-wrap -->
+</section>
+
 
 <!-- ═══ SECTION 1 — PROBLEM STATEMENT ═══ -->
 <section class="section" id="problem">
@@ -409,158 +1158,6 @@
     <div class="section-num">01 — Problem Statement</div>
     <h2>What happens today when a bug ships</h2>
     <p class="section-lead">Every app has bugs. The real problem is how long customers have to live with them once they're found.</p>
-
-    <!-- Demo -->
-    <div class="demo-wrap">
-      <div class="demo-inner">
-
-        <div class="vid-wrap">
-          <div class="phone-scene">
-            <div class="phone-frame">
-              <div class="phone-notch"></div>
-              <div class="phone-screen">
-
-                <!-- STATE 0: Browsing -->
-                <div class="screen-state active" id="state-0" style="background:linear-gradient(175deg,#1a1a2e 0%,#16213e 100%);display:flex;flex-direction:column;">
-                  <div class="ss-bar" style="background:rgba(0,0,0,.4);color:#aaa;">
-                    <span>9:41</span><span>Sonic Drive-In</span><span>●●●</span>
-                  </div>
-                  <div class="ss-content" style="padding:10px 12px;gap:8px;overflow:hidden;">
-                    <div style="font-size:10px;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:2px;">TODAY'S MENU</div>
-                    <div style="background:linear-gradient(135deg,#e85d04,#f48c06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;animation:slideUp .5s ease;">
-                      <div style="font-size:1.6rem;">🍔</div>
-                      <div><div style="font-size:12px;font-weight:700;color:#fff;">Classic Burger</div><div style="font-size:10px;color:rgba(255,255,255,.75);">$6.99 · Add extras</div></div>
-                    </div>
-                    <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;">
-                      <div style="font-size:1.4rem;">🌭</div>
-                      <div><div style="font-size:12px;font-weight:700;color:#e6edf3;">Chili Cheese Dog</div><div style="font-size:10px;color:#7d8590;">$4.49</div></div>
-                    </div>
-                    <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;">
-                      <div style="font-size:1.4rem;">🧁</div>
-                      <div><div style="font-size:12px;font-weight:700;color:#e6edf3;">Sundae Blast</div><div style="font-size:10px;color:#7d8590;">$3.29</div></div>
-                    </div>
-                    <div style="background:linear-gradient(90deg,#7c4dff,#00e5a0);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:800;color:#fff;margin-top:auto;">View Full Menu →</div>
-                  </div>
-                </div>
-
-                <!-- STATE 1: Customizing -->
-                <div class="screen-state" id="state-1" style="background:linear-gradient(175deg,#1a1a2e,#0f2027);display:flex;flex-direction:column;">
-                  <div class="ss-bar" style="background:rgba(0,0,0,.4);color:#aaa;">
-                    <span>9:41</span><span>Customize</span><span>✕</span>
-                  </div>
-                  <div class="ss-content" style="padding:10px 12px;gap:6px;">
-                    <div style="font-size:1.8rem;text-align:center;">🍔</div>
-                    <div style="font-size:13px;font-weight:700;text-align:center;color:#e6edf3;">Classic Burger</div>
-                    <div style="font-size:10px;text-align:center;color:#7d8590;margin-bottom:4px;">Make it yours</div>
-                    <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:11px;color:#e6edf3;">Cheese</span>
-                      <div style="width:28px;height:16px;border-radius:8px;background:#7c4dff;display:flex;align-items:center;padding-right:2px;justify-content:flex-end;"><div style="width:12px;height:12px;border-radius:50%;background:#fff;"></div></div>
-                    </div>
-                    <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:11px;color:#e6edf3;">Jalapeños</span>
-                      <div style="width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,.12);"><div style="width:12px;height:12px;border-radius:50%;background:#fff;margin:2px;"></div></div>
-                    </div>
-                    <div style="margin-top:auto;background:linear-gradient(90deg,#e85d04,#f48c06);border-radius:8px;padding:9px;text-align:center;font-size:12px;font-weight:800;color:#fff;">Add to Bag — $6.99</div>
-                  </div>
-                </div>
-
-                <!-- STATE 2: Crash -->
-                <div class="screen-state" id="state-2" style="background:#0d0000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;">
-                  <div style="font-size:3rem;animation:popIn .4s ease both;">💥</div>
-                  <div style="font-size:13px;font-weight:800;color:#ff5252;text-align:center;animation:slideUp .4s ease .1s both;">Couldn't add to bag</div>
-                  <div style="font-size:11px;color:#7d8590;text-align:center;line-height:1.5;animation:slideUp .4s ease .2s both;">Something went wrong.<br>Please try again.</div>
-                  <div style="background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.3);border-radius:8px;padding:7px 20px;font-size:11px;font-weight:700;color:#ff5252;animation:slideUp .4s ease .3s both;">Try Again</div>
-                </div>
-
-                <!-- STATE 3: Frustration -->
-                <div class="screen-state" id="state-3" style="background:#0a0000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
-                  <div style="font-size:2.5rem;animation:shake .5s ease;">😤</div>
-                  <div style="font-size:12px;font-weight:800;color:#ff5252;text-align:center;">Same error. Again.</div>
-                  <div style="font-size:10px;color:#7d8590;text-align:center;line-height:1.5;margin-bottom:4px;">This is the 3rd time trying.<br>I'll just order somewhere else.</div>
-                  <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 14px;width:100%;">
-                    <div style="font-size:9px;font-weight:700;color:#f0a500;letter-spacing:1px;margin-bottom:4px;">CRASHLYTICS ALERT</div>
-                    <div style="font-size:10px;color:#7d8590;">1,247 users hit this error today</div>
-                    <div style="height:3px;background:rgba(255,82,82,.3);border-radius:2px;margin-top:6px;">
-                      <div style="width:85%;height:100%;background:#ff5252;border-radius:2px;"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- STATE 4: Fix deployed -->
-                <div class="screen-state" id="state-4" style="background:linear-gradient(175deg,#0a0a1a,#0d1a0d);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
-                  <div style="font-size:2rem;animation:spin 2s linear infinite;">⚙️</div>
-                  <div style="font-size:12px;font-weight:800;color:#9b72f7;text-align:center;">OTA fix deploying</div>
-                  <div style="background:rgba(124,77,255,.1);border:1px solid rgba(124,77,255,.25);border-radius:10px;padding:10px 12px;width:100%;display:flex;flex-direction:column;gap:4px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:10px;color:#7d8590;">Engineer pushes fix</span>
-                      <span style="font-size:10px;color:#00e5a0;font-weight:700;">✓</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:10px;color:#7d8590;">Bundle built &amp; uploaded</span>
-                      <span style="font-size:10px;color:#00e5a0;font-weight:700;">✓</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                      <span style="font-size:10px;color:#e6edf3;">Delivering to all phones…</span>
-                      <div style="width:12px;height:12px;border:2px solid #9b72f7;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;"></div>
-                    </div>
-                  </div>
-                  <div style="font-size:10px;color:#7d8590;text-align:center;">No App Store. No user action needed.</div>
-                </div>
-
-                <!-- STATE 5: Success -->
-                <div class="screen-state" id="state-5" style="background:linear-gradient(175deg,#0d1a0d,#0a1a12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
-                  <div style="font-size:2.5rem;animation:popIn .5s ease;">✅</div>
-                  <div style="font-size:13px;font-weight:800;color:#00e5a0;text-align:center;">Order placed!</div>
-                  <div style="font-size:10px;color:#7d8590;text-align:center;line-height:1.5;">The bug was fixed silently.<br>The user came back — and it just worked.</div>
-                  <div style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:10px 12px;width:100%;text-align:center;">
-                    <div style="font-size:10px;color:#00e5a0;font-weight:700;">No 1-star review</div>
-                    <div style="font-size:10px;color:#7d8590;">No support ticket · No App Store wait</div>
-                  </div>
-                </div>
-
-                <!-- Scrub line -->
-                <div class="vid-scrub"><div class="vid-scrub-fill" id="vscrub"></div></div>
-
-              </div><!-- /phone-screen -->
-              <div class="phone-home"></div>
-            </div><!-- /phone-frame -->
-          </div><!-- /phone-scene -->
-          <div class="vid-caption">
-            <div class="vid-caption-title" id="vcap-title">🍔 Browsing the menu</div>
-            <div class="vid-caption-sub" id="vcap-sub">Customer opens the Sonic app</div>
-          </div>
-        </div><!-- /vid-wrap -->
-
-        <!-- Annotations -->
-        <div class="demo-annotations">
-          <div class="ann-item active" id="ann-0">
-            <div class="ann-icon">🍔</div>
-            <div><div class="ann-title">Customer browsing</div><div class="ann-sub">Opens the app, finds what they want, taps "Add to Bag"</div></div>
-          </div>
-          <div class="ann-item" id="ann-1">
-            <div class="ann-icon">🎛</div>
-            <div><div class="ann-title">Customizing order</div><div class="ann-sub">Picks extras, confirms price, taps "Add to Bag"</div></div>
-          </div>
-          <div class="ann-item" id="ann-2">
-            <div class="ann-icon">💥</div>
-            <div><div class="ann-title">Bug hits</div><div class="ann-sub">The button throws an error. Customer retries — same result.</div></div>
-          </div>
-          <div class="ann-item" id="ann-3">
-            <div class="ann-icon">😤</div>
-            <div><div class="ann-title">1,247 users affected</div><div class="ann-sub">Crashlytics spikes. No fix in sight until the next App Store release.</div></div>
-          </div>
-          <div class="ann-item" id="ann-4">
-            <div class="ann-icon">⚡</div>
-            <div><div class="ann-title">Engineer deploys fix</div><div class="ann-sub">OTA bundle pushed to all phones silently. No App Store. ~2 hours.</div></div>
-          </div>
-          <div class="ann-item" id="ann-5">
-            <div class="ann-icon">✅</div>
-            <div><div class="ann-title">Customer returns. It works.</div><div class="ann-sub">No review lost. No support ticket. They never knew.</div></div>
-          </div>
-        </div>
-
-      </div><!-- /demo-inner -->
-    </div><!-- /demo-wrap -->
 
     <!-- Pain points -->
     <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.25rem;">Without OTA, every bug fix must go through the full App Store process:</p>
@@ -846,68 +1443,295 @@
 
 
 <script>
-  // ── GIF-STYLE AUTOPLAY DEMO ──
-  const SCENES = [
-    { id: 0, duration: 2800, title: '🍔 Browsing the menu',          sub: 'Customer opens the Sonic app' },
-    { id: 1, duration: 2500, title: '🎛 Customizing order',           sub: 'Picks extras, taps Add to Bag' },
-    { id: 2, duration: 3500, title: '💥 Bug hits',                    sub: 'Error on every attempt' },
-    { id: 3, duration: 3200, title: '😤 1,247 users affected',        sub: 'Crashlytics spikes. No fix yet.' },
-    { id: 4, duration: 4000, title: '⚡ OTA fix deploying',           sub: 'No App Store. ~2 hours.' },
-    { id: 5, duration: 3800, title: '✅ Customer returns — it works', sub: 'No bad review. They never knew.' },
+  // ═══════════════════════════════════════════
+  //  ANIMATED PHONE VIDEO CONTROLLER
+  // ═══════════════════════════════════════════
+  // Real app experience: Browse → Tap Add → CRASH → iOS App Switcher → Kill → Reopen (OTA applied) → Works!
+
+  const ACTS = [
+    { id: 'browse',   duration: 5500, label: 'Browsing menu' },
+    { id: 'tap',      duration: 2200, label: 'Adding to bag...' },
+    { id: 'crash',    duration: 3500, label: 'App crashed!' },
+    { id: 'switcher', duration: 3000, label: 'Force closing app' },
+    { id: 'reopen',   duration: 4500, label: 'Reopening...' },
+    { id: 'success',  duration: 4500, label: 'Fixed via OTA!' },
   ];
 
-  const TOTAL_MS    = SCENES.reduce((s, sc) => s + sc.duration, 0);
-  const SCENE_STARTS = SCENES.reduce((acc, sc, i) => {
-    acc.push(i === 0 ? 0 : acc[i - 1] + SCENES[i - 1].duration);
+  const TOTAL_DUR = ACTS.reduce((s, a) => s + a.duration, 0);
+  const ACT_STARTS = ACTS.reduce((acc, a, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + ACTS[i - 1].duration);
     return acc;
   }, []);
 
-  let elapsed  = 0;
-  let current  = 0;
-  let lastTick = null;
+  const NARRATIONS = [
+    { label: 'Scene 1', title: 'Browsing the menu', desc: 'A customer opens BWW on their lunch break. They scroll through wings, checking out what sounds good today.' },
+    { label: 'Scene 2', title: 'Tapping "Add to Bag"', desc: 'Traditional Wings — that\'s the one. They tap the "+" button to add it to their order.' },
+    { label: 'Scene 3', title: 'The app just crashed', desc: 'TypeError: Cannot read property \'basePrice\' of null. A bug in the pricing validation code just killed the app.' },
+    { label: 'Scene 4', title: 'Killing the app', desc: 'The user swipes up in the app switcher to force-close. Meanwhile, our team already pushed a 1.4 MB OTA fix via CodePush.' },
+    { label: 'Scene 5', title: 'Reopening the app', desc: 'They give it another shot. On launch, the app silently downloads and applies the CodePush update in the background.' },
+    { label: 'Scene 6', title: 'It just works.', desc: 'Same menu, same button, same wings. This time — added to bag. No app store update. The user never knew it was broken.' },
+  ];
 
-  const vscrub    = document.getElementById('vscrub');
-  const vcapTitle = document.getElementById('vcap-title');
-  const vcapSub   = document.getElementById('vcap-sub');
+  let vidElapsed = 0;
+  let vidCurrentAct = -1;
+  let vidLastTick = null;
+  let vidPlaying = true;
 
-  function sceneFromElapsed(ms) {
-    for (let i = SCENES.length - 1; i >= 0; i--) {
-      if (ms >= SCENE_STARTS[i]) return i;
+  const vidPhone = document.getElementById('vidPhone');
+  const vidCursor = document.getElementById('vidCursor');
+  const vidProgressFill = document.getElementById('vidProgressFill');
+  const vidTime = document.getElementById('vidTime');
+  const vidLabel = document.getElementById('vidLabel');
+  const vidPlayBtn = document.getElementById('vidPlay');
+  const vidProgress = document.getElementById('vidProgress');
+  const narLabel = document.getElementById('narLabel');
+  const narTitle = document.getElementById('narTitle');
+  const narDesc = document.getElementById('narDesc');
+
+  function actFromElapsed(ms) {
+    for (let i = ACTS.length - 1; i >= 0; i--) {
+      if (ms >= ACT_STARTS[i]) return i;
     }
     return 0;
   }
 
-  function showScene(n) {
-    if (n === current) return;
-    document.querySelectorAll('.screen-state').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.ann-item').forEach(el => el.classList.remove('active'));
-    const screenEl = document.getElementById('state-' + n);
-    const annEl    = document.getElementById('ann-' + n);
-    if (screenEl) screenEl.classList.add('active');
-    if (annEl)    annEl.classList.add('active');
-    current = n;
-    const sc = SCENES[n];
-    vcapTitle.textContent = sc.title;
-    vcapSub.textContent   = sc.sub;
-  }
-
-  function tick(ts) {
-    if (lastTick === null) lastTick = ts;
-    const delta = ts - lastTick;
-    lastTick = ts;
-    elapsed += delta;
-    if (elapsed >= TOTAL_MS) {
-      elapsed -= TOTAL_MS;
-      lastTick = null;
-      showScene(0);
+  // ── Reset all phone states ──
+  function resetPhone() {
+    vidPhone.classList.remove('shake', 'shrink', 'off');
+    document.getElementById('vf-menu').classList.add('active');
+    document.getElementById('vf-success').classList.remove('active');
+    document.getElementById('vf-crash').classList.remove('active');
+    document.getElementById('vf-switcher').classList.remove('active');
+    document.getElementById('vf-black').classList.remove('active');
+    document.getElementById('vf-splash').classList.remove('active');
+    document.getElementById('vf-toast').classList.remove('active');
+    document.getElementById('splashOta').classList.remove('active');
+    document.getElementById('otaFill').style.width = '0%';
+    const card = document.getElementById('switcherCard');
+    if (card) card.classList.remove('killing');
+    vidCursor.classList.remove('visible', 'tap');
+    // Reset menu item states
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById('mi-' + i);
+      if (el) el.classList.remove('highlight', 'tapped');
+      const sel = document.getElementById('mi-s' + i);
+      if (sel) sel.classList.remove('highlight', 'tapped');
     }
-    vscrub.style.width = ((elapsed / TOTAL_MS) * 100) + '%';
-    const sc = sceneFromElapsed(elapsed);
-    if (sc !== current) showScene(sc);
-    requestAnimationFrame(tick);
   }
 
-  requestAnimationFrame(tick);
+  // ── Cursor helpers ──
+  function showCursor(x, y) {
+    vidCursor.style.left = x + 'px';
+    vidCursor.style.top = y + 'px';
+    vidCursor.classList.add('visible');
+  }
+  function tapCursor() {
+    vidCursor.classList.remove('tap');
+    void vidCursor.offsetWidth;
+    vidCursor.classList.add('tap');
+  }
+  function hideCursor() {
+    vidCursor.classList.remove('visible', 'tap');
+  }
+
+  // ── Narration update ──
+  function setNarration(actIdx) {
+    const n = NARRATIONS[actIdx];
+    narLabel.classList.remove('active');
+    narTitle.classList.remove('active');
+    narDesc.classList.remove('active');
+    void narLabel.offsetWidth;
+    narLabel.textContent = n.label;
+    narTitle.textContent = n.title;
+    narDesc.textContent = n.desc;
+    const colors = ['#f5a623','#f5a623','#ff3b30','#ff9500','#007aff','#34c759'];
+    narLabel.style.color = colors[actIdx];
+    requestAnimationFrame(() => {
+      narLabel.classList.add('active');
+      narTitle.classList.add('active');
+      narDesc.classList.add('active');
+    });
+  }
+
+  // ── ACT TRIGGERS ──
+  let actTriggered = -1;
+
+  function triggerAct(n) {
+    if (n === actTriggered) return;
+    actTriggered = n;
+    vidLabel.textContent = ACTS[n].label;
+    setNarration(n);
+
+    switch (n) {
+      case 0: browseSequence(); break;
+      case 1: tapAddButton(); break;
+      case 2: crashApp(); break;
+      case 3: showSwitcher(); break;
+      case 4: reopenApp(); break;
+      case 5: successState(); break;
+    }
+  }
+
+  // ── ACT 0: Browse — cursor scrolls through items ──
+  function browseSequence() {
+    resetPhone();
+    const positions = [
+      { x: 150, y: 270, idx: 0 },
+      { x: 150, y: 345, idx: 1 },
+      { x: 150, y: 420, idx: 2 },
+      { x: 150, y: 270, idx: 0 },
+    ];
+    positions.forEach((pos, i) => {
+      setTimeout(() => {
+        if (vidCurrentAct !== 0) return;
+        showCursor(pos.x, pos.y);
+        for (let j = 0; j < 4; j++) {
+          const el = document.getElementById('mi-' + j);
+          if (el) el.classList.remove('highlight');
+        }
+        const el = document.getElementById('mi-' + pos.idx);
+        if (el) el.classList.add('highlight');
+      }, 900 + i * 1200);
+    });
+  }
+
+  // ── ACT 1: Tap the + button on first item (Traditional Wings) ──
+  function tapAddButton() {
+    for (let j = 0; j < 4; j++) {
+      const el = document.getElementById('mi-' + j);
+      if (el) el.classList.remove('highlight');
+    }
+    // Move cursor to the + button position
+    setTimeout(() => {
+      if (vidCurrentAct !== 1) return;
+      showCursor(265, 270);
+      setTimeout(() => {
+        tapCursor();
+        const el = document.getElementById('mi-0');
+        if (el) { el.classList.add('tapped'); }
+      }, 500);
+    }, 400);
+  }
+
+  // ── ACT 2: Crash — phone shakes, then iOS alert appears ──
+  function crashApp() {
+    hideCursor();
+    vidPhone.classList.add('shake');
+    setTimeout(() => {
+      vidPhone.classList.remove('shake');
+      document.getElementById('vf-crash').classList.add('active');
+    }, 600);
+  }
+
+  // ── ACT 3: App Switcher — user swipes up to kill ──
+  function showSwitcher() {
+    // Dismiss crash dialog, show app switcher
+    setTimeout(() => {
+      document.getElementById('vf-crash').classList.remove('active');
+      document.getElementById('vf-switcher').classList.add('active');
+    }, 400);
+    // Swipe card up (killing the app)
+    setTimeout(() => {
+      const card = document.getElementById('switcherCard');
+      if (card) card.classList.add('killing');
+    }, 1400);
+    // Go to black screen
+    setTimeout(() => {
+      document.getElementById('vf-switcher').classList.remove('active');
+      document.getElementById('vf-black').classList.add('active');
+    }, 2200);
+  }
+
+  // ── ACT 4: Reopen — splash + OTA update indicator ──
+  function reopenApp() {
+    // Phone comes back to life
+    setTimeout(() => {
+      document.getElementById('vf-black').classList.remove('active');
+      document.getElementById('vf-menu').classList.remove('active');
+      document.getElementById('vf-splash').classList.add('active');
+    }, 400);
+    // Show OTA progress
+    setTimeout(() => {
+      document.getElementById('splashOta').classList.add('active');
+    }, 1000);
+    // Fill the OTA bar
+    setTimeout(() => {
+      document.getElementById('otaFill').style.width = '100%';
+    }, 1200);
+    // Transition to fixed app
+    setTimeout(() => {
+      document.getElementById('vf-splash').classList.remove('active');
+      document.getElementById('vf-success').classList.add('active');
+    }, 3800);
+  }
+
+  // ── ACT 5: Success — same tap, works now ──
+  function successState() {
+    setTimeout(() => {
+      if (vidCurrentAct !== 5) return;
+      showCursor(265, 260);
+      setTimeout(() => {
+        tapCursor();
+        const el = document.getElementById('mi-s0');
+        if (el) el.classList.add('tapped');
+        // Show success toast
+        setTimeout(() => {
+          document.getElementById('vf-toast').classList.add('active');
+          if (el) el.classList.remove('tapped');
+        }, 400);
+      }, 700);
+    }, 600);
+    setTimeout(() => hideCursor(), 3000);
+  }
+
+  // ── TICK LOOP ──
+  function vidTick(ts) {
+    if (!vidPlaying) { vidLastTick = null; requestAnimationFrame(vidTick); return; }
+    if (vidLastTick === null) vidLastTick = ts;
+    const delta = ts - vidLastTick;
+    vidLastTick = ts;
+    vidElapsed += delta;
+
+    if (vidElapsed >= TOTAL_DUR) {
+      vidElapsed = 0;
+      vidCurrentAct = -1;
+      actTriggered = -1;
+      resetPhone();
+    }
+
+    vidProgressFill.style.width = ((vidElapsed / TOTAL_DUR) * 100) + '%';
+    const secs = Math.floor(vidElapsed / 1000);
+    vidTime.textContent = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
+
+    const act = actFromElapsed(vidElapsed);
+    if (act !== vidCurrentAct) {
+      vidCurrentAct = act;
+      triggerAct(act);
+    }
+    requestAnimationFrame(vidTick);
+  }
+
+  // ── CONTROLS ──
+  vidPlayBtn.addEventListener('click', () => {
+    vidPlaying = !vidPlaying;
+    vidPlayBtn.textContent = vidPlaying ? '⏸' : '▶';
+  });
+
+  vidProgress.addEventListener('click', (e) => {
+    const rect = vidProgress.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    vidElapsed = pct * TOTAL_DUR;
+    vidCurrentAct = -1;
+    actTriggered = -1;
+    vidLastTick = null;
+    resetPhone();
+  });
+
+  // ── KICK OFF ──
+  resetPhone();
+  vidPlaying = true;
+  vidPlayBtn.textContent = '⏸';
+  requestAnimationFrame(vidTick);
 
   // ── SEQUENCE DIAGRAM RENDERER ──
   function seqSVG(cfg) {
