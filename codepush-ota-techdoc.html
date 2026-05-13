@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodePush OTA — Bitrise MBDP</title>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --card:     #1e2733;
+      --border:   #30363d;
+      --primary:  #7c4dff;
+      --accent:   #00e5a0;
+      --warn:     #f0a500;
+      --danger:   #ff5252;
+      --text:     #e6edf3;
+      --muted:    #7d8590;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 0 1.75rem;
+      margin-bottom: 0;
+    }
+    .header-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .header-brand {
+      font-size: 13px; font-weight: 700; letter-spacing: .5px;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .header-chip {
+      font-size: 11px; font-weight: 700; padding: 3px 10px;
+      border-radius: 100px; background: rgba(124,77,255,.15);
+      color: var(--primary); border: 1px solid rgba(124,77,255,.3);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 5rem 0 4rem;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,77,255,.12) 0%, transparent 70%);
+    }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -1px; margin-bottom: 1.25rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted);
+      max-width: 580px; line-height: 1.6;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 11px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: .6rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .section-num::before {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 2px;
+      background: var(--border);
+    }
+    .section h2 {
+      font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+      font-weight: 800; letter-spacing: -.5px;
+      margin-bottom: .75rem; line-height: 1.2;
+    }
+    .section-lead {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 620px; margin-bottom: 2.5rem; line-height: 1.6;
+    }
+
+    /* ── PHONE DEMO ── */
+    .demo-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 2rem;
+      margin: 2rem 0;
+    }
+    .demo-inner {
+      display: flex; align-items: flex-start; gap: 3rem; flex-wrap: wrap; justify-content: center;
+    }
+    .vid-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .phone-scene {
+      position: relative; width: 240px; height: 480px; flex-shrink: 0;
+    }
+    .phone-frame {
+      position: absolute; inset: 0;
+      background: #1c1c1e;
+      border-radius: 40px;
+      border: 6px solid #3a3a3c;
+      box-shadow:
+        0 0 0 1px #555,
+        0 30px 80px rgba(0,0,0,.7),
+        inset 0 1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .phone-notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 90px; height: 26px;
+      background: #1c1c1e; border-radius: 0 0 16px 16px;
+      z-index: 10; box-shadow: 0 1px 0 #3a3a3c;
+    }
+    .phone-screen {
+      position: absolute; inset: 0;
+      border-radius: 34px; overflow: hidden; background: #000;
+    }
+    .phone-home {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 4px; background: rgba(255,255,255,.3); border-radius: 3px;
+    }
+    .screen-state {
+      position: absolute; inset: 0;
+      opacity: 0; transition: opacity .45s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+    }
+    .screen-state.active { opacity: 1; }
+    .vid-scrub {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; z-index: 30; overflow: hidden;
+    }
+    .vid-scrub-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+    }
+    .vid-caption {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; min-height: 48px; max-width: 260px; text-align: center;
+    }
+    .vid-caption-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      transition: opacity .35s ease;
+    }
+    .vid-caption-sub {
+      font-size: 11px; color: var(--muted);
+      transition: opacity .35s ease;
+    }
+
+    /* Phone screen states */
+    .ss-bar {
+      height: 36px; display: flex; align-items: center;
+      padding: 0 14px; justify-content: space-between;
+      font-size: 10px; font-weight: 700;
+      border-radius: 34px 34px 0 0;
+      flex-shrink: 0; z-index: 5;
+    }
+    .ss-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes popIn  { 0% { transform: scale(.7); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes shake  { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+    /* Demo annotations */
+    .demo-annotations {
+      flex: 1; min-width: 220px; max-width: 300px;
+      display: flex; flex-direction: column; gap: .85rem;
+      padding-top: .5rem;
+    }
+    .ann-item {
+      display: flex; gap: .75rem; align-items: flex-start;
+      padding: .75rem 1rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; opacity: .45;
+      transition: opacity .4s, border-color .4s;
+    }
+    .ann-item.active { opacity: 1; border-color: var(--primary); }
+    .ann-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .ann-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .ann-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+    /* ── PAIN POINTS (Section 1) ── */
+    .pain-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem; margin: 2rem 0;
+    }
+    .pain-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .pain-card .pain-icon { font-size: 1.6rem; margin-bottom: .6rem; }
+    .pain-card h4 { font-size: 14px; font-weight: 700; margin-bottom: .35rem; }
+    .pain-card p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Timeline bar */
+    .timeline-wrap { margin: 2.5rem 0; }
+    .timeline-label {
+      font-size: 12px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 1rem;
+    }
+    .timeline {
+      display: flex; align-items: stretch; border-radius: 10px;
+      overflow: hidden; border: 1px solid var(--border);
+    }
+    .tl-step {
+      flex: 1; padding: .85rem .75rem;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: .3rem;
+    }
+    .tl-step:last-child { border-right: none; }
+    .tl-step-icon { font-size: 1.1rem; }
+    .tl-step-label { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .tl-step-time  {
+      font-size: 11px; font-weight: 800;
+      margin-top: auto; padding-top: .4rem;
+    }
+    .tl-step.tl-red   { border-top: 3px solid var(--danger); }
+    .tl-step.tl-amber { border-top: 3px solid var(--warn); }
+    .tl-step.tl-blue  { border-top: 3px solid #007aff; }
+    .tl-step.tl-red   .tl-step-time { color: var(--danger); }
+    .tl-step.tl-amber .tl-step-time { color: var(--warn); }
+    .tl-step.tl-blue  .tl-step-time { color: #60a5fa; }
+    .tl-total {
+      margin-top: .75rem;
+      font-size: 13px; color: var(--muted); text-align: right;
+    }
+    .tl-total strong { color: var(--danger); }
+
+    /* ── SOLVES (Section 2) ── */
+    .compare-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 600px) { .compare-wrap { grid-template-columns: 1fr; } }
+    .compare-card {
+      border-radius: 14px; padding: 1.75rem;
+    }
+    .compare-card.cc-bad {
+      background: rgba(255,82,82,.05);
+      border: 1.5px solid rgba(255,82,82,.2);
+    }
+    .compare-card.cc-good {
+      background: rgba(0,229,160,.05);
+      border: 1.5px solid rgba(0,229,160,.25);
+    }
+    .cc-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; margin-bottom: .75rem;
+    }
+    .cc-bad  .cc-eyebrow { color: var(--danger); }
+    .cc-good .cc-eyebrow { color: var(--accent); }
+    .cc-num {
+      font-size: 3.5rem; font-weight: 800;
+      line-height: 1; letter-spacing: -2px;
+      margin-bottom: .15rem;
+    }
+    .cc-bad  .cc-num { color: var(--danger); }
+    .cc-good .cc-num { color: var(--accent); }
+    .cc-unit { font-size: .9rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .cc-divider { height: 1px; background: var(--border); margin-bottom: 1rem; }
+    .cc-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .45rem; }
+    .cc-list li { font-size: .88rem; color: var(--muted); }
+
+    .benefit-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 2rem 0;
+    }
+    .benefit-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem;
+      border-top: 3px solid var(--accent);
+    }
+    .benefit-card .bc-icon { font-size: 1.5rem; margin-bottom: .6rem; }
+    .benefit-card h4 { font-size: 14px; font-weight: 700; margin-bottom: .35rem; }
+    .benefit-card p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .limit-box {
+      background: rgba(240,165,0,.07);
+      border: 1px solid rgba(240,165,0,.25);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      margin-top: 2rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .limit-box .lb-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .limit-box h4 { font-size: 14px; font-weight: 700; margin-bottom: .35rem; color: var(--warn); }
+    .limit-box p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .limit-box strong { color: var(--text); }
+
+    /* ── HOW (Section 3) ── */
+    .steps-flow { margin: 2rem 0; display: flex; flex-direction: column; gap: 0; }
+    .step-row { display: flex; gap: 1.25rem; align-items: flex-start; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-connector {
+      width: 2px; height: 28px; margin-left: 17px;
+      background: var(--border); flex-shrink: 0;
+    }
+    .step-body { flex: 1; padding-bottom: 1.25rem; }
+    .step-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+    .step-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .step-tag   {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 9px; border-radius: 100px; margin-top: .4rem;
+    }
+
+    .step-num.sn1 { background: rgba(0,122,255,.15);  color: #60a5fa; border: 1.5px solid rgba(0,122,255,.35); }
+    .step-num.sn2 { background: rgba(240,165,0,.15);  color: #f0a500; border: 1.5px solid rgba(240,165,0,.35); }
+    .step-num.sn3 { background: rgba(124,77,255,.15); color: #9b72f7; border: 1.5px solid rgba(124,77,255,.35); }
+    .step-num.sn4 { background: rgba(0,229,160,.15);  color: #00e5a0; border: 1.5px solid rgba(0,229,160,.35); }
+    .step-num.sn5 { background: rgba(0,229,160,.2);   color: #00e5a0; border: 2px solid rgba(0,229,160,.5); }
+
+    .who-tag {
+      font-size: 10px; font-weight: 700; padding: 2px 8px;
+      border-radius: 100px; opacity: .8;
+    }
+    .who-eng      { background: rgba(0,122,255,.15);  color: #60a5fa; }
+    .who-platform { background: rgba(124,77,255,.15); color: #9b72f7; }
+    .who-phone    { background: rgba(0,229,160,.15);  color: #00e5a0; }
+
+    /* ── SEQUENCE DIAGRAM TABS ── */
+    .seq-tabs {
+      display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .seq-tab {
+      padding: .45rem 1.1rem; border-radius: 100px;
+      border: 1px solid var(--border); background: transparent;
+      cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 700;
+      color: var(--muted); transition: all .18s; white-space: nowrap;
+    }
+    .seq-tab:hover { background: rgba(255,255,255,.05); color: var(--text); }
+    .seq-tab.active {
+      background: rgba(124,77,255,.15); border-color: rgba(124,77,255,.4);
+      color: #c4b5fd;
+    }
+    .seq-panel { display: none; }
+    .seq-panel.active { display: block; }
+    .seq-context {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .seq-badge {
+      font-size: 11px; font-weight: 700; padding: 4px 12px;
+      border-radius: 100px; border: 1px solid; flex-shrink: 0;
+    }
+    .seq-desc { font-size: .9rem; color: var(--muted); line-height: 1.5; }
+    .seq-wrap {
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; background: #161b22;
+    }
+
+    /* Footer */
+    footer {
+      padding: 2.5rem 0; text-align: center;
+      font-size: 12px; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <span class="header-brand">Inspire Brands · MBDP</span>
+    <span class="header-chip">CodePush OTA · POC</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Bitrise CodePush — Over-the-Air Updates</div>
+    <h1>Fix the app in <span>2 hours</span>,<br>not 7 days.</h1>
+    <p class="hero-sub">A new capability that lets engineering push fixes directly to every customer's phone — no App Store, no user action, no waiting.</p>
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 1 — PROBLEM STATEMENT ═══ -->
+<section class="section" id="problem">
+  <div class="container">
+
+    <div class="section-num">01 — Problem Statement</div>
+    <h2>What happens today when a bug ships</h2>
+    <p class="section-lead">Every app has bugs. The real problem is how long customers have to live with them once they're found.</p>
+
+    <!-- Demo -->
+    <div class="demo-wrap">
+      <div class="demo-inner">
+
+        <div class="vid-wrap">
+          <div class="phone-scene">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+
+                <!-- STATE 0: Browsing -->
+                <div class="screen-state active" id="state-0" style="background:linear-gradient(175deg,#1a1a2e 0%,#16213e 100%);display:flex;flex-direction:column;">
+                  <div class="ss-bar" style="background:rgba(0,0,0,.4);color:#aaa;">
+                    <span>9:41</span><span>Sonic Drive-In</span><span>●●●</span>
+                  </div>
+                  <div class="ss-content" style="padding:10px 12px;gap:8px;overflow:hidden;">
+                    <div style="font-size:10px;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:2px;">TODAY'S MENU</div>
+                    <div style="background:linear-gradient(135deg,#e85d04,#f48c06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;animation:slideUp .5s ease;">
+                      <div style="font-size:1.6rem;">🍔</div>
+                      <div><div style="font-size:12px;font-weight:700;color:#fff;">Classic Burger</div><div style="font-size:10px;color:rgba(255,255,255,.75);">$6.99 · Add extras</div></div>
+                    </div>
+                    <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;">
+                      <div style="font-size:1.4rem;">🌭</div>
+                      <div><div style="font-size:12px;font-weight:700;color:#e6edf3;">Chili Cheese Dog</div><div style="font-size:10px;color:#7d8590;">$4.49</div></div>
+                    </div>
+                    <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;display:flex;gap:8px;align-items:center;">
+                      <div style="font-size:1.4rem;">🧁</div>
+                      <div><div style="font-size:12px;font-weight:700;color:#e6edf3;">Sundae Blast</div><div style="font-size:10px;color:#7d8590;">$3.29</div></div>
+                    </div>
+                    <div style="background:linear-gradient(90deg,#7c4dff,#00e5a0);border-radius:8px;padding:8px;text-align:center;font-size:11px;font-weight:800;color:#fff;margin-top:auto;">View Full Menu →</div>
+                  </div>
+                </div>
+
+                <!-- STATE 1: Customizing -->
+                <div class="screen-state" id="state-1" style="background:linear-gradient(175deg,#1a1a2e,#0f2027);display:flex;flex-direction:column;">
+                  <div class="ss-bar" style="background:rgba(0,0,0,.4);color:#aaa;">
+                    <span>9:41</span><span>Customize</span><span>✕</span>
+                  </div>
+                  <div class="ss-content" style="padding:10px 12px;gap:6px;">
+                    <div style="font-size:1.8rem;text-align:center;">🍔</div>
+                    <div style="font-size:13px;font-weight:700;text-align:center;color:#e6edf3;">Classic Burger</div>
+                    <div style="font-size:10px;text-align:center;color:#7d8590;margin-bottom:4px;">Make it yours</div>
+                    <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:11px;color:#e6edf3;">Cheese</span>
+                      <div style="width:28px;height:16px;border-radius:8px;background:#7c4dff;display:flex;align-items:center;padding-right:2px;justify-content:flex-end;"><div style="width:12px;height:12px;border-radius:50%;background:#fff;"></div></div>
+                    </div>
+                    <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:11px;color:#e6edf3;">Jalapeños</span>
+                      <div style="width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,.12);"><div style="width:12px;height:12px;border-radius:50%;background:#fff;margin:2px;"></div></div>
+                    </div>
+                    <div style="margin-top:auto;background:linear-gradient(90deg,#e85d04,#f48c06);border-radius:8px;padding:9px;text-align:center;font-size:12px;font-weight:800;color:#fff;">Add to Bag — $6.99</div>
+                  </div>
+                </div>
+
+                <!-- STATE 2: Crash -->
+                <div class="screen-state" id="state-2" style="background:#0d0000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;">
+                  <div style="font-size:3rem;animation:popIn .4s ease both;">💥</div>
+                  <div style="font-size:13px;font-weight:800;color:#ff5252;text-align:center;animation:slideUp .4s ease .1s both;">Couldn't add to bag</div>
+                  <div style="font-size:11px;color:#7d8590;text-align:center;line-height:1.5;animation:slideUp .4s ease .2s both;">Something went wrong.<br>Please try again.</div>
+                  <div style="background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.3);border-radius:8px;padding:7px 20px;font-size:11px;font-weight:700;color:#ff5252;animation:slideUp .4s ease .3s both;">Try Again</div>
+                </div>
+
+                <!-- STATE 3: Frustration -->
+                <div class="screen-state" id="state-3" style="background:#0a0000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
+                  <div style="font-size:2.5rem;animation:shake .5s ease;">😤</div>
+                  <div style="font-size:12px;font-weight:800;color:#ff5252;text-align:center;">Same error. Again.</div>
+                  <div style="font-size:10px;color:#7d8590;text-align:center;line-height:1.5;margin-bottom:4px;">This is the 3rd time trying.<br>I'll just order somewhere else.</div>
+                  <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 14px;width:100%;">
+                    <div style="font-size:9px;font-weight:700;color:#f0a500;letter-spacing:1px;margin-bottom:4px;">CRASHLYTICS ALERT</div>
+                    <div style="font-size:10px;color:#7d8590;">1,247 users hit this error today</div>
+                    <div style="height:3px;background:rgba(255,82,82,.3);border-radius:2px;margin-top:6px;">
+                      <div style="width:85%;height:100%;background:#ff5252;border-radius:2px;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- STATE 4: Fix deployed -->
+                <div class="screen-state" id="state-4" style="background:linear-gradient(175deg,#0a0a1a,#0d1a0d);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
+                  <div style="font-size:2rem;animation:spin 2s linear infinite;">⚙️</div>
+                  <div style="font-size:12px;font-weight:800;color:#9b72f7;text-align:center;">OTA fix deploying</div>
+                  <div style="background:rgba(124,77,255,.1);border:1px solid rgba(124,77,255,.25);border-radius:10px;padding:10px 12px;width:100%;display:flex;flex-direction:column;gap:4px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:10px;color:#7d8590;">Engineer pushes fix</span>
+                      <span style="font-size:10px;color:#00e5a0;font-weight:700;">✓</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:10px;color:#7d8590;">Bundle built &amp; uploaded</span>
+                      <span style="font-size:10px;color:#00e5a0;font-weight:700;">✓</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:10px;color:#e6edf3;">Delivering to all phones…</span>
+                      <div style="width:12px;height:12px;border:2px solid #9b72f7;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;"></div>
+                    </div>
+                  </div>
+                  <div style="font-size:10px;color:#7d8590;text-align:center;">No App Store. No user action needed.</div>
+                </div>
+
+                <!-- STATE 5: Success -->
+                <div class="screen-state" id="state-5" style="background:linear-gradient(175deg,#0d1a0d,#0a1a12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;">
+                  <div style="font-size:2.5rem;animation:popIn .5s ease;">✅</div>
+                  <div style="font-size:13px;font-weight:800;color:#00e5a0;text-align:center;">Order placed!</div>
+                  <div style="font-size:10px;color:#7d8590;text-align:center;line-height:1.5;">The bug was fixed silently.<br>The user came back — and it just worked.</div>
+                  <div style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:10px 12px;width:100%;text-align:center;">
+                    <div style="font-size:10px;color:#00e5a0;font-weight:700;">No 1-star review</div>
+                    <div style="font-size:10px;color:#7d8590;">No support ticket · No App Store wait</div>
+                  </div>
+                </div>
+
+                <!-- Scrub line -->
+                <div class="vid-scrub"><div class="vid-scrub-fill" id="vscrub"></div></div>
+
+              </div><!-- /phone-screen -->
+              <div class="phone-home"></div>
+            </div><!-- /phone-frame -->
+          </div><!-- /phone-scene -->
+          <div class="vid-caption">
+            <div class="vid-caption-title" id="vcap-title">🍔 Browsing the menu</div>
+            <div class="vid-caption-sub" id="vcap-sub">Customer opens the Sonic app</div>
+          </div>
+        </div><!-- /vid-wrap -->
+
+        <!-- Annotations -->
+        <div class="demo-annotations">
+          <div class="ann-item active" id="ann-0">
+            <div class="ann-icon">🍔</div>
+            <div><div class="ann-title">Customer browsing</div><div class="ann-sub">Opens the app, finds what they want, taps "Add to Bag"</div></div>
+          </div>
+          <div class="ann-item" id="ann-1">
+            <div class="ann-icon">🎛</div>
+            <div><div class="ann-title">Customizing order</div><div class="ann-sub">Picks extras, confirms price, taps "Add to Bag"</div></div>
+          </div>
+          <div class="ann-item" id="ann-2">
+            <div class="ann-icon">💥</div>
+            <div><div class="ann-title">Bug hits</div><div class="ann-sub">The button throws an error. Customer retries — same result.</div></div>
+          </div>
+          <div class="ann-item" id="ann-3">
+            <div class="ann-icon">😤</div>
+            <div><div class="ann-title">1,247 users affected</div><div class="ann-sub">Crashlytics spikes. No fix in sight until the next App Store release.</div></div>
+          </div>
+          <div class="ann-item" id="ann-4">
+            <div class="ann-icon">⚡</div>
+            <div><div class="ann-title">Engineer deploys fix</div><div class="ann-sub">OTA bundle pushed to all phones silently. No App Store. ~2 hours.</div></div>
+          </div>
+          <div class="ann-item" id="ann-5">
+            <div class="ann-icon">✅</div>
+            <div><div class="ann-title">Customer returns. It works.</div><div class="ann-sub">No review lost. No support ticket. They never knew.</div></div>
+          </div>
+        </div>
+
+      </div><!-- /demo-inner -->
+    </div><!-- /demo-wrap -->
+
+    <!-- Pain points -->
+    <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.25rem;">Without OTA, every bug fix must go through the full App Store process:</p>
+    <div class="timeline-wrap">
+      <div class="timeline-label">Current fix timeline — without OTA</div>
+      <div class="timeline">
+        <div class="tl-step tl-red">
+          <div class="tl-step-icon">🐛</div>
+          <div class="tl-step-label">Bug found</div>
+          <div class="tl-step-time">Day 0</div>
+        </div>
+        <div class="tl-step tl-amber">
+          <div class="tl-step-icon">🔨</div>
+          <div class="tl-step-label">Fix written &amp; full build</div>
+          <div class="tl-step-time">+2 hours</div>
+        </div>
+        <div class="tl-step tl-amber">
+          <div class="tl-step-icon">📋</div>
+          <div class="tl-step-label">Submitted to App Store review</div>
+          <div class="tl-step-time">+1–3 days</div>
+        </div>
+        <div class="tl-step tl-blue">
+          <div class="tl-step-icon">📱</div>
+          <div class="tl-step-label">Users manually update</div>
+          <div class="tl-step-time">+3–7 days</div>
+        </div>
+      </div>
+      <div class="tl-total">Total time customers live with the bug: <strong>up to 7 days</strong></div>
+    </div>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">⭐</div>
+        <h4>1-star reviews stack up</h4>
+        <p>Customers hit the bug repeatedly before a fix reaches them. Each frustrated session is a potential bad review.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🎧</div>
+        <h4>Support tickets flood in</h4>
+        <p>Every user who can't complete an order contacts support. The team spends hours on issues they can't yet fix.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🛒</div>
+        <h4>Lost revenue</h4>
+        <p>Customers who can't order don't wait — they go elsewhere. A checkout bug on a Friday night is expensive.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🚦</div>
+        <h4>Engineering blocked</h4>
+        <p>Engineers see the Crashlytics spike in real time but can't do anything about it until the next release window.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 2 — WHAT IT SOLVES ═══ -->
+<section class="section" id="what-it-solves">
+  <div class="container">
+
+    <div class="section-num">02 — What It Solves</div>
+    <h2>Fix bugs in hours, not days</h2>
+    <p class="section-lead">CodePush OTA lets engineering push a fix directly to every customer's phone — bypassing the App Store entirely.</p>
+
+    <div class="compare-wrap">
+      <div class="compare-card cc-bad">
+        <div class="cc-eyebrow">🏪 Without OTA — App Store only</div>
+        <div class="cc-num">3–7</div>
+        <div class="cc-unit">days before users are fixed</div>
+        <div class="cc-divider"></div>
+        <ul class="cc-list">
+          <li>❌ Submit to Apple &amp; Google for review</li>
+          <li>❌ Users must manually install the update</li>
+          <li>❌ ~50% still on the broken version after a week</li>
+          <li>❌ Reviews and support tickets accumulate</li>
+        </ul>
+      </div>
+      <div class="compare-card cc-good">
+        <div class="cc-eyebrow">⚡ With OTA — Bitrise CodePush</div>
+        <div class="cc-num">~2</div>
+        <div class="cc-unit">hours to fix 100% of users</div>
+        <div class="cc-divider"></div>
+        <ul class="cc-list">
+          <li>✅ No App Store submission</li>
+          <li>✅ Completely automatic — no user action</li>
+          <li>✅ Every active user gets the fix</li>
+          <li>✅ Customer never knew there was a bug</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <div class="bc-icon">🔇</div>
+        <h4>Silent delivery</h4>
+        <p>The update downloads in the background while the customer uses the app. It applies on their next launch — no prompts, no interruptions.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="bc-icon">🔁</div>
+        <h4>Instant rollback</h4>
+        <p>If a fix introduces a new problem, it can be rolled back to the previous version within minutes — no App Store resubmission.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="bc-icon">🏷</div>
+        <h4>Per-brand, per-environment</h4>
+        <p>Each brand (Arby's, BWW, Dunkin', Sonic) has its own update channel. A fix for Sonic won't touch Dunkin'. QA and production are completely separate.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="bc-icon">🔒</div>
+        <h4>Secure by design</h4>
+        <p>Deployment keys are stored in Azure Key Vault — not in the codebase. Each update is signed and verified on the device before it loads.</p>
+      </div>
+    </div>
+
+    <div class="limit-box">
+      <div class="lb-icon">⚠️</div>
+      <div>
+        <h4>One important boundary</h4>
+        <p>OTA only updates <strong>JavaScript and UI logic</strong> — the part where the vast majority of bugs live. It cannot update native code (camera permissions, hardware modules, OS-level integrations). Those still require a full App Store release. Think of OTA as a fast lane for everything except native changes.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 3 — HOW IT WORKS ═══ -->
+<section class="section" id="how">
+  <div class="container">
+
+    <div class="section-num">03 — How It Works</div>
+    <h2>Five steps from bug fix to customer's phone</h2>
+    <p class="section-lead">The whole process is automatic once the engineer pushes the fix. Here's what happens in order.</p>
+
+    <div class="steps-flow">
+
+      <div class="step-row">
+        <div class="step-num sn1">1</div>
+        <div class="step-body">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div class="step-title" style="margin:0;">Engineer writes and merges the fix</div>
+            <span class="who-tag who-eng">Engineering</span>
+          </div>
+          <div class="step-desc">The fix is a standard code change. When it merges to the release branch, the CI pipeline kicks off automatically — no manual steps needed.</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row">
+        <div class="step-num sn2">2</div>
+        <div class="step-body">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div class="step-title" style="margin:0;">Pipeline builds a small update package</div>
+            <span class="who-tag who-platform">Bitrise CI</span>
+          </div>
+          <div class="step-desc">Instead of rebuilding the entire app, the pipeline packages only the changed JavaScript — typically 1–2 MB. This takes about 5 minutes, compared to a full native build's 30–60 minutes.</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row">
+        <div class="step-num sn3">3</div>
+        <div class="step-body">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div class="step-title" style="margin:0;">Package is uploaded to Bitrise's delivery platform</div>
+            <span class="who-tag who-platform">Bitrise Platform</span>
+          </div>
+          <div class="step-desc">The update is registered for the target app version — for example, all users on version 1.0.x of the Sonic app. Users on a different version are not affected.</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row">
+        <div class="step-num sn4">4</div>
+        <div class="step-body">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div class="step-title" style="margin:0;">App downloads the update silently in the background</div>
+            <span class="who-tag who-phone">Customer's phone</span>
+          </div>
+          <div class="step-desc">The next time a customer opens the app, it checks for an available update. If one exists, it downloads automatically in the background while the customer uses the app normally — they see nothing.</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row">
+        <div class="step-num sn5">5</div>
+        <div class="step-body">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div class="step-title" style="margin:0;">Fix is live on the customer's next app open</div>
+            <span class="who-tag who-phone">Customer's phone</span>
+          </div>
+          <div class="step-desc">The new code loads silently on their next launch. No prompt. No loading screen. The bug is just gone — and the customer never knew there was one.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Total time callout -->
+    <div style="margin-top:2rem;background:rgba(0,229,160,.07);border:1.5px solid rgba(0,229,160,.2);border-radius:14px;padding:1.5rem 1.75rem;display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;">
+      <div style="font-size:2.5rem;font-weight:800;color:var(--accent);line-height:1;letter-spacing:-1px;">~2 hrs</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:.3rem;">Total time from fix written to all users patched</div>
+        <div style="font-size:13px;color:var(--muted);">Compared to 3–7 days via the App Store. The customer experience is completely uninterrupted.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══ SECTION 4 — SEQUENCE DIAGRAMS ═══ -->
+<section class="section" id="altitude">
+  <div class="container">
+
+    <div class="section-num">04 — Sequence Diagrams</div>
+    <h2>The same flow — seen from every altitude</h2>
+    <p class="section-lead">Pick your altitude. Each level shows the same CodePush OTA flow as a sequence diagram — who talks to whom, and in what order. Start at 30,000 ft for the executive view; land at 0 ft for exact SDK internals.</p>
+
+    <!-- Tab bar -->
+    <div class="seq-tabs">
+      <button class="seq-tab active" data-seq="30k">✈ 30,000 ft &nbsp;<span style="font-size:9px;opacity:.7;font-weight:400">C-Suite</span></button>
+      <button class="seq-tab" data-seq="20k">✈ 20,000 ft &nbsp;<span style="font-size:9px;opacity:.7;font-weight:400">VP / Director</span></button>
+      <button class="seq-tab" data-seq="10k">✈ 10,000 ft &nbsp;<span style="font-size:9px;opacity:.7;font-weight:400">Eng Lead</span></button>
+      <button class="seq-tab" data-seq="5k">✈ 5,000 ft &nbsp;<span style="font-size:9px;opacity:.7;font-weight:400">DevOps</span></button>
+      <button class="seq-tab" data-seq="0ft">🔬 0 ft &nbsp;<span style="font-size:9px;opacity:.7;font-weight:400">Developer</span></button>
+    </div>
+
+    <!-- 30,000 ft — C-Suite -->
+    <div id="seq-30k" class="seq-panel active">
+      <div class="seq-context">
+        <span class="seq-badge" style="background:rgba(240,165,0,.1);color:#f0a500;border-color:rgba(240,165,0,.3);">✈ 30,000 ft — C-Suite</span>
+        <span class="seq-desc">One sentence: we fix a broken app in 2 hours, not 7 days. No App Store, no user action.</span>
+      </div>
+      <div class="seq-wrap" id="seq-30k-svg"></div>
+    </div>
+
+    <!-- 20,000 ft — VP / Director -->
+    <div id="seq-20k" class="seq-panel">
+      <div class="seq-context">
+        <span class="seq-badge" style="background:rgba(124,77,255,.1);color:#9b72f7;border-color:rgba(124,77,255,.3);">✈ 20,000 ft — VP / Director</span>
+        <span class="seq-desc">A real user story with timestamps — from crash alert to silent fix delivered.</span>
+      </div>
+      <div class="seq-wrap" id="seq-20k-svg"></div>
+    </div>
+
+    <!-- 10,000 ft — Engineering Lead -->
+    <div id="seq-10k" class="seq-panel">
+      <div class="seq-context">
+        <span class="seq-badge" style="background:rgba(0,122,255,.1);color:#60a5fa;border-color:rgba(0,122,255,.3);">✈ 10,000 ft — Engineering Lead</span>
+        <span class="seq-desc">System components and handoffs — engineer to CI to cloud to every phone.</span>
+      </div>
+      <div class="seq-wrap" id="seq-10k-svg"></div>
+    </div>
+
+    <!-- 5,000 ft — DevOps -->
+    <div id="seq-5k" class="seq-panel">
+      <div class="seq-context">
+        <span class="seq-badge" style="background:rgba(0,229,160,.1);color:#00e5a0;border-color:rgba(0,229,160,.3);">✈ 5,000 ft — DevOps</span>
+        <span class="seq-desc">Full CI/CD pipeline — every command, every API call, every decision point.</span>
+      </div>
+      <div class="seq-wrap" id="seq-5k-svg"></div>
+    </div>
+
+    <!-- 0 ft — Developer -->
+    <div id="seq-0ft" class="seq-panel">
+      <div class="seq-context">
+        <span class="seq-badge" style="background:rgba(155,114,247,.1);color:#c4b5fd;border-color:rgba(155,114,247,.3);">🔬 0 ft — Developer</span>
+        <span class="seq-desc">SDK internals — exactly what runs inside the app from launch to fix applied.</span>
+      </div>
+      <div class="seq-wrap" id="seq-0ft-svg"></div>
+    </div>
+
+  </div>
+</section>
+
+
+<footer>
+  <div class="container">
+    Inspire Brands · MBDP · CodePush OTA POC · Branch: feature/DOVS-9959-bitrise-ota
+  </div>
+</footer>
+
+
+<script>
+  // ── GIF-STYLE AUTOPLAY DEMO ──
+  const SCENES = [
+    { id: 0, duration: 2800, title: '🍔 Browsing the menu',          sub: 'Customer opens the Sonic app' },
+    { id: 1, duration: 2500, title: '🎛 Customizing order',           sub: 'Picks extras, taps Add to Bag' },
+    { id: 2, duration: 3500, title: '💥 Bug hits',                    sub: 'Error on every attempt' },
+    { id: 3, duration: 3200, title: '😤 1,247 users affected',        sub: 'Crashlytics spikes. No fix yet.' },
+    { id: 4, duration: 4000, title: '⚡ OTA fix deploying',           sub: 'No App Store. ~2 hours.' },
+    { id: 5, duration: 3800, title: '✅ Customer returns — it works', sub: 'No bad review. They never knew.' },
+  ];
+
+  const TOTAL_MS    = SCENES.reduce((s, sc) => s + sc.duration, 0);
+  const SCENE_STARTS = SCENES.reduce((acc, sc, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + SCENES[i - 1].duration);
+    return acc;
+  }, []);
+
+  let elapsed  = 0;
+  let current  = 0;
+  let lastTick = null;
+
+  const vscrub    = document.getElementById('vscrub');
+  const vcapTitle = document.getElementById('vcap-title');
+  const vcapSub   = document.getElementById('vcap-sub');
+
+  function sceneFromElapsed(ms) {
+    for (let i = SCENES.length - 1; i >= 0; i--) {
+      if (ms >= SCENE_STARTS[i]) return i;
+    }
+    return 0;
+  }
+
+  function showScene(n) {
+    if (n === current) return;
+    document.querySelectorAll('.screen-state').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.ann-item').forEach(el => el.classList.remove('active'));
+    const screenEl = document.getElementById('state-' + n);
+    const annEl    = document.getElementById('ann-' + n);
+    if (screenEl) screenEl.classList.add('active');
+    if (annEl)    annEl.classList.add('active');
+    current = n;
+    const sc = SCENES[n];
+    vcapTitle.textContent = sc.title;
+    vcapSub.textContent   = sc.sub;
+  }
+
+  function tick(ts) {
+    if (lastTick === null) lastTick = ts;
+    const delta = ts - lastTick;
+    lastTick = ts;
+    elapsed += delta;
+    if (elapsed >= TOTAL_MS) {
+      elapsed -= TOTAL_MS;
+      lastTick = null;
+      showScene(0);
+    }
+    vscrub.style.width = ((elapsed / TOTAL_MS) * 100) + '%';
+    const sc = sceneFromElapsed(elapsed);
+    if (sc !== current) showScene(sc);
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+
+  // ── SEQUENCE DIAGRAM RENDERER ──
+  function seqSVG(cfg) {
+    const W = 1000, ACTOR_H = 54, ACTOR_W = 120, ROW_H = 54, TOP = 14, BOT = 24;
+    const N = cfg.actors.length;
+    const slot = W / N;
+    const lx = cfg.actors.map((_, i) => Math.round((i + 0.5) * slot));
+
+    let totalRows = 0;
+    cfg.messages.forEach(m => { totalRows += m.type === 'divider' ? 0.75 : 1; });
+    const H = TOP + ACTOR_H + Math.max(totalRows, 1) * ROW_H + BOT;
+
+    let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">`;
+    s += `<rect width="${W}" height="${H}" fill="#161b22" rx="0"/>`;
+
+    // Draw actor boxes
+    cfg.actors.forEach((a, i) => {
+      const cx = lx[i], bx = cx - ACTOR_W / 2, by = TOP;
+      s += `<rect x="${bx}" y="${by}" width="${ACTOR_W}" height="${ACTOR_H}" rx="10" fill="${a.bg}" stroke="${a.stroke}" stroke-width="1.5"/>`;
+      s += `<text x="${cx}" y="${by + 20}" text-anchor="middle" dominant-baseline="middle" font-size="17">${a.emoji}</text>`;
+      // Split long names to 2 lines
+      const words = a.label.split(' ');
+      if (a.label.length > 13 && words.length > 1) {
+        const mid = Math.ceil(words.length / 2);
+        const l1 = words.slice(0, mid).join(' '), l2 = words.slice(mid).join(' ');
+        s += `<text x="${cx}" y="${by + 34}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#e6edf3">${l1}</text>`;
+        s += `<text x="${cx}" y="${by + 46}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#e6edf3">${l2}</text>`;
+      } else {
+        s += `<text x="${cx}" y="${by + 41}" text-anchor="middle" font-size="11" font-weight="700" fill="#e6edf3">${a.label}</text>`;
+      }
+    });
+
+    // Draw lifelines
+    const lifeTop = TOP + ACTOR_H, lifeBot = H - BOT;
+    cfg.actors.forEach((_, i) => {
+      s += `<line x1="${lx[i]}" y1="${lifeTop}" x2="${lx[i]}" y2="${lifeBot}" stroke="#2a3140" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+    });
+
+    // Draw messages
+    let y = TOP + ACTOR_H + ROW_H * 0.62;
+
+    cfg.messages.forEach(m => {
+
+      // ── Divider ──
+      if (m.type === 'divider') {
+        s += `<line x1="20" y1="${y}" x2="${W - 20}" y2="${y}" stroke="#2d3748" stroke-width="1" stroke-dasharray="5,4"/>`;
+        const tw = Math.min(m.label.length * 8 + 28, 220), th = 22;
+        s += `<rect x="${W/2 - tw/2}" y="${y - th/2}" width="${tw}" height="${th}" rx="${th/2}" fill="#1e2733" stroke="#3a4457" stroke-width="1"/>`;
+        s += `<text x="${W/2}" y="${y + 4}" text-anchor="middle" font-size="11" fill="#7d8590" font-weight="600">${m.label}</text>`;
+        y += ROW_H * 0.75;
+        return;
+      }
+
+      // ── Self-message (loop) ──
+      if (m.type === 'self') {
+        const ci = cfg.actors.findIndex(a => a.id === m.who);
+        const cx = lx[ci];
+        const col = m.color || '#7c4dff';
+        const lw = 26, lh = 26;
+        const dash = m.dashed ? 'stroke-dasharray="5,3"' : '';
+        s += `<path d="M${cx},${y} L${cx+lw},${y} L${cx+lw},${y+lh} L${cx+5},${y+lh}" fill="none" stroke="${col}" stroke-width="1.5" ${dash}/>`;
+        s += `<polygon points="${cx+5},${y+lh} ${cx+12},${y+lh-5} ${cx+12},${y+lh+5}" fill="${col}"/>`;
+        const fs = m.code ? 9.5 : 11;
+        const ff = m.code ? `font-family="'SFMono-Regular',Consolas,monospace"` : '';
+        const fc = m.code ? '#9b72f7' : '#c9d1d9';
+        // bg rect for label
+        const lbl = m.label, lbw = lbl.length * (m.code ? 6 : 7.2) + 12;
+        const lbx = cx + lw + 6;
+        s += `<rect x="${lbx - 2}" y="${y + lh/2 - 9}" width="${lbw}" height="16" rx="3" fill="#161b22" opacity="0.9"/>`;
+        s += `<text x="${lbx}" y="${y + lh/2 + 4}" font-size="${fs}" fill="${fc}" font-weight="${m.code ? '400' : '600'}" ${ff}>${lbl}</text>`;
+        y += ROW_H;
+        return;
+      }
+
+      // ── Regular arrow ──
+      const fi = cfg.actors.findIndex(a => a.id === m.from);
+      const ti = cfg.actors.findIndex(a => a.id === m.to);
+      const x1 = lx[fi], x2 = lx[ti];
+      const col = m.return ? '#586070' : (m.color || '#00e5a0');
+      const dash = m.return ? 'stroke-dasharray="7,4"' : '';
+      const dir = x2 > x1 ? 1 : -1;
+
+      s += `<line x1="${x1}" y1="${y}" x2="${x2 - dir * 2}" y2="${y}" stroke="${col}" stroke-width="1.5" ${dash}/>`;
+      s += `<polygon points="${x2},${y} ${x2-dir*10},${y-5} ${x2-dir*10},${y+5}" fill="${col}"/>`;
+
+      // Label with bg rect
+      const mx = (x1 + x2) / 2;
+      const lbl = m.label;
+      const fs = m.code ? 9.5 : 11;
+      const ff = m.code ? `font-family="'SFMono-Regular',Consolas,monospace"` : '';
+      const fc = m.code ? '#9b72f7' : (m.return ? '#7d8590' : '#e6edf3');
+      const lbw = lbl.length * (m.code ? 5.8 : 7.2) + 14;
+      const lbh = 16;
+      s += `<rect x="${mx - lbw/2}" y="${y - lbh - 3}" width="${lbw}" height="${lbh}" rx="4" fill="#161b22" opacity="0.9"/>`;
+      s += `<text x="${mx}" y="${y - 7}" text-anchor="middle" font-size="${fs}" fill="${fc}" font-weight="${m.code ? '400' : '600'}" ${ff}>${lbl}</text>`;
+      y += ROW_H;
+    });
+
+    s += '</svg>';
+    return s;
+  }
+
+  // ── DIAGRAM CONFIGS ──
+  const DIAGRAMS = {
+
+    '30k': {
+      actors: [
+        { id:'cust', emoji:'👤', label:'Customer',    bg:'rgba(0,229,160,.12)', stroke:'rgba(0,229,160,.35)' },
+        { id:'app',  emoji:'📱', label:'The App',     bg:'rgba(124,77,255,.12)', stroke:'rgba(124,77,255,.35)' },
+        { id:'eng',  emoji:'👩‍💻', label:'Engineering', bg:'rgba(0,122,255,.12)', stroke:'rgba(0,122,255,.35)' }
+      ],
+      messages: [
+        { type:'msg',  from:'cust', to:'app',  label:'Opens app — hits bug', color:'#ff5252' },
+        { type:'msg',  from:'app',  to:'eng',  label:'🚨 Crash alert fired',  color:'#ff5252' },
+        { type:'msg',  from:'eng',  to:'app',  label:'OTA fix pushed',        color:'#7c4dff' },
+        { type:'divider', label:'~ 2 hours total' },
+        { type:'msg',  from:'app',  to:'cust', label:'✅ Works on next open', color:'#00e5a0' }
+      ]
+    },
+
+    '20k': {
+      actors: [
+        { id:'cust',  emoji:'👤', label:'Customer',    bg:'rgba(0,229,160,.12)', stroke:'rgba(0,229,160,.35)' },
+        { id:'app',   emoji:'📱', label:'Sonic App',   bg:'rgba(124,77,255,.12)', stroke:'rgba(124,77,255,.35)' },
+        { id:'crash', emoji:'🔥', label:'Crashlytics', bg:'rgba(255,82,82,.12)', stroke:'rgba(255,82,82,.35)' },
+        { id:'eng',   emoji:'👩‍💻', label:'Engineering', bg:'rgba(0,122,255,.12)', stroke:'rgba(0,122,255,.35)' }
+      ],
+      messages: [
+        { type:'msg', from:'cust',  to:'app',   label:'12:14 PM — checkout fails',   color:'#ff5252' },
+        { type:'msg', from:'app',   to:'crash', label:'Records crash event',          color:'#ff5252' },
+        { type:'msg', from:'crash', to:'eng',   label:'🚨 Alert: spike detected',     color:'#f0a500' },
+        { type:'msg', from:'eng',   to:'app',   label:'12:30 PM — OTA bundle pushed', color:'#7c4dff' },
+        { type:'divider', label:'~ 90 minutes pass' },
+        { type:'msg', from:'cust',  to:'app',   label:'2:00 PM — opens app again' },
+        { type:'msg', from:'app',   to:'cust',  label:'✅ Updated silently — works',  color:'#00e5a0' }
+      ]
+    },
+
+    '10k': {
+      actors: [
+        { id:'eng',      emoji:'👩‍💻', label:'Engineer',         bg:'rgba(0,122,255,.12)', stroke:'rgba(0,122,255,.35)' },
+        { id:'ci',       emoji:'⚙️',  label:'Bitrise CI',       bg:'rgba(124,77,255,.12)', stroke:'rgba(124,77,255,.35)' },
+        { id:'vault',    emoji:'🔐',  label:'Key Vault',        bg:'rgba(240,165,0,.12)', stroke:'rgba(240,165,0,.35)' },
+        { id:'platform', emoji:'☁️',  label:'Bitrise Platform', bg:'rgba(0,180,200,.12)', stroke:'rgba(0,180,200,.35)' },
+        { id:'phone',    emoji:'📱',  label:"User's Phone",     bg:'rgba(0,229,160,.12)', stroke:'rgba(0,229,160,.35)' }
+      ],
+      messages: [
+        { type:'msg',  from:'eng',      to:'ci',       label:'Merge to release branch' },
+        { type:'msg',  from:'ci',       to:'vault',    label:'Request deploy key' },
+        { type:'msg',  from:'vault',    to:'ci',       label:'Returns deploy key',    return:true },
+        { type:'self', who:'ci',                       label:'Build JS bundle (~5 min)', color:'#9b72f7' },
+        { type:'msg',  from:'ci',       to:'platform', label:'Upload bundle via REST' },
+        { type:'divider', label:'On next app launch' },
+        { type:'msg',  from:'phone',    to:'platform', label:'checkForUpdate()',      code:true },
+        { type:'msg',  from:'platform', to:'phone',    label:'Bundle URL + SHA-256',  return:true },
+        { type:'self', who:'phone',                    label:'Download & verify hash', color:'#00e5a0' },
+        { type:'self', who:'phone',                    label:'Apply bundle on restart',color:'#00e5a0' }
+      ]
+    },
+
+    '5k': {
+      actors: [
+        { id:'eng',     emoji:'👩‍💻', label:'Engineer',      bg:'rgba(0,122,255,.12)', stroke:'rgba(0,122,255,.35)' },
+        { id:'gitlab',  emoji:'🦊',  label:'GitLab CI',     bg:'rgba(240,100,0,.12)', stroke:'rgba(240,100,0,.35)' },
+        { id:'vault',   emoji:'🔐',  label:'Key Vault',     bg:'rgba(240,165,0,.12)', stroke:'rgba(240,165,0,.35)' },
+        { id:'release', emoji:'📦',  label:'Release Mgmt',  bg:'rgba(124,77,255,.12)', stroke:'rgba(124,77,255,.35)' },
+        { id:'server',  emoji:'🌐',  label:'CP Server',     bg:'rgba(0,180,200,.12)', stroke:'rgba(0,180,200,.35)' },
+        { id:'phone',   emoji:'📱',  label:"User's Phone",  bg:'rgba(0,229,160,.12)', stroke:'rgba(0,229,160,.35)' }
+      ],
+      messages: [
+        { type:'msg',  from:'eng',     to:'gitlab',  label:'git push release/branch',     code:true },
+        { type:'msg',  from:'gitlab',  to:'vault',   label:'yarn pull-secrets',            code:true },
+        { type:'msg',  from:'vault',   to:'gitlab',  label:'CODE_PUSH_DEPLOYMENT_KEY',     code:true, return:true },
+        { type:'self', who:'gitlab',                 label:'react-native bundle',          code:true, color:'#f06400' },
+        { type:'msg',  from:'gitlab',  to:'release', label:'POST /deployments',            code:true },
+        { type:'msg',  from:'release', to:'server',  label:'Registers for app v1.0.x' },
+        { type:'divider', label:'User opens app' },
+        { type:'msg',  from:'phone',   to:'server',  label:'GET /updateCheck',             code:true },
+        { type:'msg',  from:'server',  to:'phone',   label:'downloadURL + sha256Hash',     code:true, return:true },
+        { type:'self', who:'phone',                  label:'Download ~1.5 MB bundle',      color:'#00e5a0' },
+        { type:'self', who:'phone',                  label:'Verify SHA-256 + apply',       color:'#00e5a0' }
+      ]
+    },
+
+    '0ft': {
+      actors: [
+        { id:'entry',  emoji:'📄', label:'index.js',       bg:'rgba(0,122,255,.12)', stroke:'rgba(0,122,255,.35)' },
+        { id:'hoc',    emoji:'🔧', label:'codePush() HOC', bg:'rgba(124,77,255,.12)', stroke:'rgba(124,77,255,.35)' },
+        { id:'hook',   emoji:'🪝', label:'useCodePush',    bg:'rgba(170,100,255,.12)', stroke:'rgba(170,100,255,.35)' },
+        { id:'sdk',    emoji:'⚡', label:'CodePush SDK',   bg:'rgba(0,180,200,.12)', stroke:'rgba(0,180,200,.35)' },
+        { id:'server', emoji:'🌐', label:'CP Server',      bg:'rgba(80,90,110,.18)', stroke:'rgba(100,110,130,.4)' }
+      ],
+      messages: [
+        { type:'msg',  from:'entry',  to:'hoc',    label:'codePush(EntryComponent, opts)', code:true },
+        { type:'msg',  from:'hoc',    to:'sdk',    label:'ON_APP_START → sync()',          code:true },
+        { type:'msg',  from:'sdk',    to:'server', label:'GET /updateCheck',               code:true },
+        { type:'msg',  from:'server', to:'sdk',    label:'{ downloadURL, hash }',          code:true, return:true },
+        { type:'self', who:'sdk',                  label:'download() to device',           code:true, color:'#00b4c8' },
+        { type:'self', who:'sdk',                  label:'verifyHash(sha256)',              code:true, color:'#00b4c8' },
+        { type:'msg',  from:'sdk',    to:'hoc',    label:'status: UPDATE_INSTALLED',       code:true, return:true },
+        { type:'msg',  from:'hoc',    to:'hook',   label:'status → UPDATE_INSTALLED',      code:true },
+        { type:'msg',  from:'hook',   to:'entry',  label:'restartApp() on next launch',    code:true, return:true }
+      ]
+    }
+  };
+
+  // ── RENDER ALL DIAGRAMS ──
+  Object.entries(DIAGRAMS).forEach(([key, cfg]) => {
+    const el = document.getElementById('seq-' + key + '-svg');
+    if (el) el.innerHTML = seqSVG(cfg);
+  });
+
+  // ── SEQUENCE TAB SWITCHER ──
+  document.querySelectorAll('.seq-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.seq-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.seq-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const panel = document.getElementById('seq-' + btn.dataset.seq);
+      if (panel) panel.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
